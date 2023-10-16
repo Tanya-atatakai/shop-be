@@ -11,6 +11,7 @@ jest.mock('@libs/data-service', () => ({
 describe('getProductsList', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    console.log = jest.fn();
   });
 
   it('should handle successful request', async () => {

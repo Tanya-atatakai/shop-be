@@ -16,6 +16,7 @@ jest.mock('@libs/data-service', () => ({
 describe('getProductsById', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    console.log = jest.fn();
   });
 
   it('should handle valid product ID', async () => {
