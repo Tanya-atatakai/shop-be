@@ -5,7 +5,7 @@
   "main": "serverless.ts",
   "scripts": {
     "generate-docs": "sls generate-swagger",
-    "test": "jest",
+    "test": "jest --silent",
     "deploy": "npm run test && sls deploy",
     "fill-tables": "ts-node src/libs/fill-db-tables.ts"
   },

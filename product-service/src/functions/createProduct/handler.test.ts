@@ -13,7 +13,6 @@ jest.mock('@libs/data-service', () => ({
 describe('createProduct', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    console.log = jest.fn();
   });
 
   test('should handle valid input and create product', async () => {
