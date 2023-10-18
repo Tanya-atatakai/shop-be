@@ -11,10 +11,10 @@ export const main: APIGatewayProxyEventHandler = async (event) => {
   try {
     const productId = event.pathParameters.productId;
 
-    console.log('Request: product by id', event.pathParameters.productId);
+    console.log('Request: product by id', productId);
 
     if (!productId) {
-      console.log('Bad request: product by id', event.pathParameters.productId);
+      console.log('Bad request: product by id', productId);
 
       return formatBadRequestResponse('Bad Request: Missing productId parameter');
     }

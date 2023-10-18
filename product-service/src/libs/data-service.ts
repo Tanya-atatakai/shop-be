@@ -1,31 +1,18 @@
-import { Product, ProductsData, Stock } from 'src/types/api-types';
+import { CreateProductParams, Product, ProductFull, ProductsData, Stock } from 'src/types/api-types';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
-  AttributeValue,
-  DynamoDBClient,
-  PutItemCommand,
-  PutItemCommandInput,
+  DynamoDBDocumentClient,
+  PutCommandInput,
+  PutCommand,
+  QueryCommandInput,
   QueryCommand,
-  QueryInput,
-  ScanCommand,
-  ScanCommandInput
-} from '@aws-sdk/client-dynamodb';
+  BatchGetCommandInput,
+  BatchGetCommand,
+  ScanCommandInput,
+  ScanCommand
+} from '@aws-sdk/lib-dynamodb';
 
-const dynamodb = new DynamoDBClient({ region: process.env.REGION || 'us-east-1' });
-
-function deserializeDynamoDBItem(item: Record<string, AttributeValue>) {
-  const deserializedItem = {};
-  for (const [attributeName, value] of Object.entries(item)) {
-    const attributeType = Object.keys(value)[0];
-
-    if (attributeType === 'S') {
-      deserializedItem[attributeName] = value.S;
-    } else if (attributeType === 'N') {
-      deserializedItem[attributeName] = parseFloat(value.N);
-    }
-  }
-
-  return deserializedItem;
-}
+const dynamodb = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.REGION || 'us-east-1' }));
 
 async function queryProducts(): Promise<Product[]> {
   const params: ScanCommandInput = {
@@ -34,61 +21,92 @@ async function queryProducts(): Promise<Product[]> {
 
   const data = await dynamodb.send(new ScanCommand(params));
 
-  return data.Items.map((item) => deserializeDynamoDBItem(item)) as Product[];
+  return data.Items as Product[];
 }
 
-async function queryStock(productId: string): Promise<Stock> {
-  const params: QueryInput = {
-    TableName: process.env.STOCKS_TABLE_NAME || 'stocks',
-    KeyConditionExpression: 'product_id = :id',
-    ExpressionAttributeValues: {
-      ':id': { S: productId }
+async function batchQueryStock(productIds: string[]): Promise<Stock[]> {
+  const params: BatchGetCommandInput = {
+    RequestItems: {
+      [process.env.STOCKS_TABLE_NAME || 'stocks']: {
+        Keys: productIds.map((productId) => ({
+          product_id: productId
+        }))
+      }
     }
   };
 
-  const data = await dynamodb.send(new QueryCommand(params));
-
-  return deserializeDynamoDBItem(data.Items[0]) as Stock;
+  const data = await dynamodb.send(new BatchGetCommand(params));
+  return data.Responses![process.env.STOCKS_TABLE_NAME || 'stocks'] as Stock[];
 }
 
 export const getProducts = async (): Promise<ProductsData> => {
   try {
     const products = await queryProducts();
+    const productIds = products.map((product) => product.id);
 
-    const productsWithStock = await Promise.all(
-      products.map(async (product) => {
-        const stock = await queryStock(product.id);
+    const stocks = await batchQueryStock(productIds);
 
-        return { ...product, count: (stock && stock.count) || 0 };
-      })
-    );
+    const productsWithStock = products.map((product) => {
+      const stock = stocks.find((stock) => stock.product_id === product.id);
+      return { ...product, count: (stock && stock.count) || 0 };
+    });
 
-    return { products: productsWithStock };
+    return { products: productsWithStock, total: productsWithStock.length };
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };
 
-export const getProductById = async (productId): Promise<Product | undefined> => {
-  const { products } = await getProducts();
-
-  return products.find((product) => product.id === productId);
-};
-
-export const addProductToDB = async (id, title, description, image, price) => {
-  const params: PutItemCommandInput = {
+async function queryProduct(productId: string): Promise<Product> {
+  const params: QueryCommandInput = {
     TableName: process.env.PRODUCTS_TABLE_NAME || 'products',
-    Item: {
-      id: { S: id },
-      title: { S: title },
-      description: { S: description },
-      image: { S: image },
-      price: { N: price.toString() }
+    KeyConditionExpression: 'id = :id',
+    ExpressionAttributeValues: {
+      ':id': productId
     }
   };
 
-  const command = new PutItemCommand(params);
+  const data = await dynamodb.send(new QueryCommand(params));
+
+  return data.Items[0] as Product;
+}
+
+async function queryStock(productId: string): Promise<Stock> {
+  const params: QueryCommandInput = {
+    TableName: process.env.STOCKS_TABLE_NAME || 'stocks',
+    KeyConditionExpression: 'product_id = :id',
+    ExpressionAttributeValues: {
+      ':id': productId
+    }
+  };
+
+  const data = await dynamodb.send(new QueryCommand(params));
+
+  return data.Items[0] as Stock;
+}
+
+export const getProductById = async (productId): Promise<ProductFull> => {
+  const product = await queryProduct(productId);
+  const stock = await queryStock(productId);
+
+  return { ...product, count: stock?.count || 0 };
+};
+
+export const addProductToDB = async (product: CreateProductParams) => {
+  const { id, title, description, image, price } = product;
+
+  const params: PutCommandInput = {
+    TableName: process.env.PRODUCTS_TABLE_NAME || 'products',
+    Item: {
+      id,
+      title,
+      description,
+      image,
+      price: price.toString()
+    }
+  };
+
+  const command = new PutCommand(params);
 
   try {
     await dynamodb.send(command);
@@ -99,15 +117,15 @@ export const addProductToDB = async (id, title, description, image, price) => {
 };
 
 export const addStockToDB = async (product_id, count) => {
-  const params: PutItemCommandInput = {
+  const params: PutCommandInput = {
     TableName: process.env.STOCKS_TABLE_NAME || 'stocks',
     Item: {
-      product_id: { S: product_id },
-      count: { N: count.toString() }
+      product_id,
+      count: count.toString()
     }
   };
 
-  const command = new PutItemCommand(params);
+  const command = new PutCommand(params);
 
   try {
     await dynamodb.send(command);

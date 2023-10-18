@@ -28,8 +28,7 @@ export default {
         },
         responses: {
           '200': {
-            description: 'Success response',
-            bodyType: 'ProductsData'
+            description: 'Success response'
           },
           '400': {
             description: 'Invalid data response',

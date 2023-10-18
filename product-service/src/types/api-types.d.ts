@@ -24,6 +24,7 @@ export type ProductFull = {
 
 export type ProductsData = {
   products: ProductFull[];
+  total: number;
 };
 
 export type CreateProductParams = {

@@ -46,10 +46,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Success response",
-            "schema": {
-              "$ref": "#/definitions/ProductsData"
-            }
+            "description": "Success response"
           },
           "400": {
             "description": "Invalid data response",
@@ -216,10 +213,15 @@
           },
           "title": "ProductsData.products",
           "type": "array"
+        },
+        "total": {
+          "title": "ProductsData.total",
+          "type": "number"
         }
       },
       "required": [
-        "products"
+        "products",
+        "total"
       ],
       "additionalProperties": false,
       "title": "ProductsData",

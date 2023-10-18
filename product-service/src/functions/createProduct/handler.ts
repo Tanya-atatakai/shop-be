@@ -5,7 +5,7 @@ import {
   formatServerErrorResponse
 } from '@libs/api-gateway';
 import { randomUUID } from 'crypto';
-import { addProductToDB, addStockToDB, getProducts } from '@libs/data-service';
+import { addProductToDB, addStockToDB } from '@libs/data-service';
 import { CreateProductParams } from 'src/types/api-types';
 
 const validateParams = (data: CreateProductParams) => {
@@ -38,15 +38,17 @@ export const main: APIGatewayProxyEventHandler = async (event) => {
 
       return formatBadRequestResponse(validationError);
     } else {
-      await addProductToDB(productId, data.title, data.description, data.image, data.price);
-      await addStockToDB(productId, 0);
+      const { title, description, image, price } = data;
+      const product = { id: productId, title, description, image, price };
+      const stock = { count: 0 };
 
-      const products = await getProducts();
+      await addProductToDB(product);
+      await addStockToDB(productId, stock.count);
 
-      console.log('Success: create product', { products });
+      console.log('Success: create product', { ...product, ...stock });
 
       return formatJSONResponse({
-        data: products
+        data: null
       });
     }
   } catch (error) {
