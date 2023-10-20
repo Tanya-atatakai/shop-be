@@ -5,11 +5,16 @@
   "main": "serverless.ts",
   "scripts": {
     "generate-docs": "sls generate-swagger",
-    "test": "jest",
-    "deploy": "npm run test && sls deploy"
+    "test": "jest --silent",
+    "deploy": "npm run test && sls deploy",
+    "fill-tables": "ts-node src/libs/fill-db-tables.ts"
   },
   "engines": {
     "node": ">=14.15.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.428.0",
+    "@aws-sdk/lib-dynamodb": "^3.430.0"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.0.0",

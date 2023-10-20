@@ -2,6 +2,7 @@ import { handlerPath } from '@libs/handler-resolver';
 
 export default {
   handler: `${handlerPath(__dirname)}/handler.main`,
+  role: 'arn:aws:iam::974074737183:role/DynamoDbLambdaAccessRole',
   events: [
     {
       http: {
@@ -12,19 +13,19 @@ export default {
         responses: {
           '200': {
             description: '200 response',
-            bodyType: 'IProduct'
+            bodyType: 'Product'
           },
           '404': {
             description: 'Product not found response',
-            bodyType: 'INotFoundResponse'
+            bodyType: 'NotFoundResponse'
           },
           '400': {
             description: 'Bad request response',
-            bodyType: 'IErrorResponse'
+            bodyType: 'ErrorResponse'
           },
           '500': {
             description: '500 response',
-            bodyType: 'IErrorResponse'
+            bodyType: 'ErrorResponse'
           }
         }
       }

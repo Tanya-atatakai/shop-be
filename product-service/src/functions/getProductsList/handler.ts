@@ -5,12 +5,18 @@ import { getProducts } from '@libs/data-service';
 
 export const main: APIGatewayProxyEventHandler = async () => {
   try {
+    console.log('Request: products list');
+
     const data = await getProducts();
+
+    console.log('Success: products list', { data });
 
     return formatJSONResponse({
       data
     });
-  } catch {
+  } catch (error) {
+    console.log('Error: products list', { error });
+
     return formatServerErrorResponse();
   }
 };

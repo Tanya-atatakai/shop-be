@@ -22,13 +22,42 @@
           "200": {
             "description": "200 response",
             "schema": {
-              "$ref": "#/definitions/IProductsData"
+              "$ref": "#/definitions/ProductsData"
             }
           },
           "500": {
             "description": "Error response",
             "schema": {
-              "$ref": "#/definitions/IErrorResponse"
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create product",
+        "description": "",
+        "operationId": "createProduct.post.products",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success response"
+          },
+          "400": {
+            "description": "Invalid data response",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Error response",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
             }
           }
         }
@@ -57,25 +86,25 @@
           "200": {
             "description": "200 response",
             "schema": {
-              "$ref": "#/definitions/IProduct"
+              "$ref": "#/definitions/Product"
             }
           },
           "400": {
             "description": "Bad request response",
             "schema": {
-              "$ref": "#/definitions/IErrorResponse"
+              "$ref": "#/definitions/ErrorResponse"
             }
           },
           "404": {
             "description": "Product not found response",
             "schema": {
-              "$ref": "#/definitions/INotFoundResponse"
+              "$ref": "#/definitions/NotFoundResponse"
             }
           },
           "500": {
             "description": "500 response",
             "schema": {
-              "$ref": "#/definitions/IErrorResponse"
+              "$ref": "#/definitions/ErrorResponse"
             }
           }
         }
@@ -83,57 +112,159 @@
     }
   },
   "definitions": {
-    "IProduct": {
+    "Product": {
       "properties": {
         "id": {
-          "title": "IProduct.id",
+          "title": "Product.id",
           "type": "string"
         },
         "title": {
-          "title": "IProduct.title",
+          "title": "Product.title",
+          "type": "string"
+        },
+        "description": {
+          "title": "Product.description",
           "type": "string"
         },
         "image": {
-          "title": "IProduct.image",
+          "title": "Product.image",
           "type": "string"
         },
         "price": {
-          "title": "IProduct.price",
+          "title": "Product.price",
           "type": "number"
         }
       },
       "required": [
         "id",
         "title",
+        "description",
         "image",
         "price"
       ],
       "additionalProperties": false,
-      "title": "IProduct",
+      "title": "Product",
       "type": "object"
     },
-    "IProductsData": {
+    "Stock": {
       "properties": {
-        "products": {
-          "items": {
-            "$ref": "#/definitions/IProduct",
-            "title": "IProductsData.products.[]"
-          },
-          "title": "IProductsData.products",
-          "type": "array"
+        "product_id": {
+          "title": "Stock.product_id",
+          "type": "string"
+        },
+        "count": {
+          "title": "Stock.count",
+          "type": "number"
         }
       },
       "required": [
-        "products"
+        "product_id",
+        "count"
       ],
       "additionalProperties": false,
-      "title": "IProductsData",
+      "title": "Stock",
       "type": "object"
     },
-    "INotFoundResponse": {
+    "ProductFull": {
+      "properties": {
+        "id": {
+          "title": "ProductFull.id",
+          "type": "string"
+        },
+        "title": {
+          "title": "ProductFull.title",
+          "type": "string"
+        },
+        "description": {
+          "title": "ProductFull.description",
+          "type": "string"
+        },
+        "image": {
+          "title": "ProductFull.image",
+          "type": "string"
+        },
+        "price": {
+          "title": "ProductFull.price",
+          "type": "number"
+        },
+        "count": {
+          "title": "ProductFull.count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "image",
+        "price",
+        "count"
+      ],
+      "additionalProperties": false,
+      "title": "ProductFull",
+      "type": "object"
+    },
+    "ProductsData": {
+      "properties": {
+        "products": {
+          "items": {
+            "$ref": "#/definitions/ProductFull",
+            "title": "ProductsData.products.[]"
+          },
+          "title": "ProductsData.products",
+          "type": "array"
+        },
+        "total": {
+          "title": "ProductsData.total",
+          "type": "number"
+        }
+      },
+      "required": [
+        "products",
+        "total"
+      ],
+      "additionalProperties": false,
+      "title": "ProductsData",
+      "type": "object"
+    },
+    "CreateProductParams": {
+      "properties": {
+        "id": {
+          "title": "CreateProductParams.id",
+          "type": "string"
+        },
+        "title": {
+          "title": "CreateProductParams.title",
+          "type": "string"
+        },
+        "description": {
+          "title": "CreateProductParams.description",
+          "type": "string"
+        },
+        "image": {
+          "title": "CreateProductParams.image",
+          "type": "string"
+        },
+        "price": {
+          "title": "CreateProductParams.price",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "image",
+        "price"
+      ],
+      "additionalProperties": false,
+      "title": "CreateProductParams",
+      "type": "object"
+    },
+    "NotFoundResponse": {
       "properties": {
         "message": {
-          "title": "INotFoundResponse.message",
+          "title": "NotFoundResponse.message",
           "type": "string"
         }
       },
@@ -141,13 +272,13 @@
         "message"
       ],
       "additionalProperties": false,
-      "title": "INotFoundResponse",
+      "title": "NotFoundResponse",
       "type": "object"
     },
-    "IErrorResponse": {
+    "ErrorResponse": {
       "properties": {
         "error": {
-          "title": "IErrorResponse.error",
+          "title": "ErrorResponse.error",
           "type": "string"
         }
       },
@@ -155,7 +286,7 @@
         "error"
       ],
       "additionalProperties": false,
-      "title": "IErrorResponse",
+      "title": "ErrorResponse",
       "type": "object"
     }
   },
