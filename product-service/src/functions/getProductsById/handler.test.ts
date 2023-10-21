@@ -5,7 +5,7 @@ import {
   formatJSONResponse,
   formatNotFoundResponse,
   formatServerErrorResponse
-} from '@libs/api-gateway';
+} from '../../../../shared/helpers/formatResponse';
 import { getProductById } from '@libs/data-service';
 
 // Mock the data-service module

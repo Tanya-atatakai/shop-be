@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { main } from './handler';
-import { formatServerErrorResponse, formatJSONResponse } from '@libs/api-gateway';
+import { formatServerErrorResponse, formatJSONResponse } from '../../../../shared/helpers/formatResponse';
 import { getProducts } from '@libs/data-service';
 
 // Mock the data-service module

@@ -1,5 +1,5 @@
-import { APIGatewayProxyEventHandler, formatServerErrorResponse } from '@libs/api-gateway';
-import { formatJSONResponse } from '@libs/api-gateway';
+import { APIGatewayProxyEventHandler } from '@libs/api-gateway';
+import { formatJSONResponse, formatServerErrorResponse } from '../../../../shared/helpers/formatResponse';
 
 import { getProducts } from '@libs/data-service';
 

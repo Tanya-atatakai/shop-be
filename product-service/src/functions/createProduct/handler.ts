@@ -1,9 +1,9 @@
+import { APIGatewayProxyEventHandler } from '@libs/api-gateway';
 import {
-  APIGatewayProxyEventHandler,
   formatBadRequestResponse,
   formatJSONResponse,
   formatServerErrorResponse
-} from '@libs/api-gateway';
+} from '../../../../shared/helpers/formatResponse';
 import { randomUUID } from 'crypto';
 import { addProductToDB, addStockToDB } from '@libs/data-service';
 import { CreateProductParams } from 'src/types/api-types';

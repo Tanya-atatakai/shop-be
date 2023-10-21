@@ -1,11 +1,12 @@
+import { APIGatewayProxyEventHandler } from '@libs/api-gateway';
+import { getProductById } from '@libs/data-service';
+
 import {
-  APIGatewayProxyEventHandler,
   formatBadRequestResponse,
   formatJSONResponse,
   formatNotFoundResponse,
   formatServerErrorResponse
-} from '@libs/api-gateway';
-import { getProductById } from '@libs/data-service';
+} from '../../../../shared/helpers/formatResponse';
 
 export const main: APIGatewayProxyEventHandler = async (event) => {
   try {
