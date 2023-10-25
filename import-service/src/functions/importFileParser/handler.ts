@@ -1,11 +1,10 @@
-import { APIGatewayProxyResult, S3Event } from "aws-lambda";
+import { S3Event } from "aws-lambda";
 import { S3 } from "aws-sdk";
-import { formatServerErrorResponse } from "../../../../shared/helpers/formatResponse";
 import csvParser from "csv-parser";
 
 const s3 = new S3({ region: process.env.REGION });
 
-export const main = async (event: S3Event): Promise<APIGatewayProxyResult> => {
+export const main = async (event: S3Event): Promise<void> => {
   try {
     const { Records } = event;
 
@@ -54,6 +53,5 @@ export const main = async (event: S3Event): Promise<APIGatewayProxyResult> => {
     }
   } catch (error) {
     console.error("Error parsing CSV:", error);
-    return formatServerErrorResponse();
   }
 };
