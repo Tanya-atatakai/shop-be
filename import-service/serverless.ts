@@ -12,11 +12,15 @@ const serverlessConfiguration: AWS = {
     environment: {
       BUCKET: "${self:custom.bucket}",
       REGION: "${self:provider.region}",
+      SQS_URL: {
+        "Fn::ImportValue": "CatalogItemsQueueUrl",
+      },
     },
     iam: {
       role: {
         managedPolicies: [
           "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
           "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess",
         ],
         statements: [
@@ -34,7 +38,6 @@ const serverlessConfiguration: AWS = {
       },
     },
   },
-  functions: { importProductsFile, importFileParser },
   package: { individually: true },
   custom: {
     bucket: "products-files-p4x9q7h2r1s0w",
@@ -68,6 +71,7 @@ const serverlessConfiguration: AWS = {
       },
     },
   },
+  functions: { importProductsFile, importFileParser },
 };
 
 module.exports = serverlessConfiguration;

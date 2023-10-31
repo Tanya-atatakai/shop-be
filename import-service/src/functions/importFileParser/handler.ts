@@ -1,8 +1,9 @@
 import { S3Event } from "aws-lambda";
-import { S3 } from "aws-sdk";
+import { S3, SQS } from "aws-sdk";
 import csvParser from "csv-parser";
 
 const s3 = new S3({ region: process.env.REGION });
+const sqs = new SQS({ region: process.env.REGION });
 
 export const main = async (event: S3Event): Promise<void> => {
   try {
@@ -20,14 +21,25 @@ export const main = async (event: S3Event): Promise<void> => {
       await new Promise<void>((resolve, reject) => {
         s3Stream
           .pipe(csvParser())
-          .on("data", (row) => {
-            console.log("Parsed CSV Record:", row);
+          .on("data", async (row) => {
+            try {
+              const params = {
+                MessageBody: JSON.stringify(row),
+                QueueUrl: process.env.SQS_URL,
+              };
+
+              await sqs.sendMessage(params).promise();
+            } catch (error) {
+              console.error("Error sending message to SQS:", error);
+              reject(error);
+            }
           })
           .on("end", () => {
             console.log("CSV parsing completed.");
             resolve();
           })
           .on("error", (error) => {
+            console.error("Error parsing CSV:", error);
             reject(error);
           });
       });
@@ -52,6 +64,6 @@ export const main = async (event: S3Event): Promise<void> => {
       console.log(`File moved to parsed folder: ${parsedKey}`);
     }
   } catch (error) {
-    console.error("Error parsing CSV:", error);
+    console.error("Error processing CSV:", error);
   }
 };

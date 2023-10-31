@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { main } from './handler';
-import { formatBadRequestResponse } from '@libs/api-gateway';
+import { formatBadRequestResponse } from '../../../../shared/helpers/formatResponse';
 
 // Mock the data-service module
 jest.mock('@libs/data-service', () => ({
