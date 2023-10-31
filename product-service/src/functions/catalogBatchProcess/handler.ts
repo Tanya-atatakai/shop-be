@@ -44,9 +44,9 @@ export const main = async (event: SQSEvent): Promise<void> => {
       const params = {
         Message: message,
         MessageAttributes: {
-          updatedProducts: {
-            DataType: 'String.Array',
-            StringValue: JSON.stringify(products)
+          isTest: {
+            DataType: 'String',
+            StringValue: JSON.stringify(products).match(/test/i) ? 'true' : 'false'
           }
         },
         Subject: 'New Products Created',

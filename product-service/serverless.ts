@@ -92,7 +92,7 @@ const serverlessConfiguration: AWS = {
           },
           FilterPolicyScope: 'MessageAttributes',
           FilterPolicy: {
-            updatedProducts: ['test', 'TEST', 'Test']
+            isTest: ['true']
           }
         }
       }
