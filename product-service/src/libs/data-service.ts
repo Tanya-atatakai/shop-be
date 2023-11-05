@@ -85,9 +85,13 @@ async function queryStock(productId: string): Promise<Stock> {
   return data.Items[0] as Stock;
 }
 
-export const getProductById = async (productId): Promise<ProductFull> => {
+export const getProductById = async (productId): Promise<ProductFull | null> => {
   const product = await queryProduct(productId);
   const stock = await queryStock(productId);
+
+  if (!product) {
+    return null;
+  }
 
   return { ...product, count: stock?.count || 0 };
 };
