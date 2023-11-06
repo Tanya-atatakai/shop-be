@@ -1,6 +1,8 @@
 const SUCCESS_STATUS = 200;
 const NOT_FOUND_STATUS = 404;
 const BAD_REQUEST_STATUS = 400;
+const UNAUTHORIZED_STATUS = 401;
+const FORBIDDEN_STATUS = 403;
 const SERVER_ERROR_STATUS = 500;
 
 const CORS_HEADERS: Record<string, string | number | boolean> = {
@@ -37,5 +39,21 @@ export const formatServerErrorResponse = () => {
     statusCode: SERVER_ERROR_STATUS,
     headers: CORS_HEADERS,
     body: JSON.stringify({ error: "Internal server error" }),
+  };
+};
+
+export const formatUnauthorizedErrorResponse = () => {
+  return {
+    statusCode: UNAUTHORIZED_STATUS,
+    headers: CORS_HEADERS,
+    body: JSON.stringify({ error: "Unauthorized Error" }),
+  };
+};
+
+export const formatForbiddenErrorResponse = () => {
+  return {
+    statusCode: FORBIDDEN_STATUS,
+    headers: CORS_HEADERS,
+    body: JSON.stringify({ error: "Forbidden error" }),
   };
 };
