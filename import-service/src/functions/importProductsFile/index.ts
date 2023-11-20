@@ -10,6 +10,12 @@ export default {
         cors: {
           origins: ["*"],
         },
+        authorizer: {
+          name: "basicAuthorizer",
+          arn: {
+            "Fn::ImportValue": "BasicAuthorizerLambdaFunctionArn",
+          },
+        },
         request: {
           parameters: {
             querystrings: {
